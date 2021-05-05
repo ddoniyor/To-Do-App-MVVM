@@ -13,19 +13,22 @@ import com.example.todoappmvvm.model.retrofit.Pojo
 import kotlinx.android.synthetic.main.item_layout.view.*
 import kotlinx.android.synthetic.main.list_layout.view.*
 
-class ItemAdapter(private val callbackInterface: CallbackInterface): RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(private val callbackInterface: CallbackInterface) :
+    RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
     var todoItem = mutableListOf<Pojo.GetAllItems>()
+
     interface CallbackInterface {
         fun deleteItemById(id: Int)
-        fun updateItemById(id:Int,list:MutableList<Pojo.GetAllItems>)
-        fun updateCheckBox(id: Int,state: Pojo.UpdateCheckBoxRequest)
+        fun updateItemById(id: Int, list: MutableList<Pojo.GetAllItems>)
+        fun updateCheckBox(id: Int, state: Pojo.UpdateCheckBoxRequest)
     }
-    fun setItems(items: MutableList<Pojo.GetAllItems>?){
+
+    fun setItems(items: MutableList<Pojo.GetAllItems>?) {
         this.todoItem = items!!
         notifyDataSetChanged()
     }
 
-    class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
+    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.titleItem
         val description: TextView = itemView.descriptionItem
         val deleteItem: ImageButton = itemView.closeItem
@@ -34,7 +37,8 @@ class ItemAdapter(private val callbackInterface: CallbackInterface): RecyclerVie
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
         return ItemViewHolder(itemView)
     }
 
@@ -48,7 +52,7 @@ class ItemAdapter(private val callbackInterface: CallbackInterface): RecyclerVie
         }
 
         holder.updateItem.setOnClickListener {
-            callbackInterface.updateItemById(position,todoItem)
+            callbackInterface.updateItemById(position, todoItem)
         }
 
         holder.title.text = todoItem[position].title

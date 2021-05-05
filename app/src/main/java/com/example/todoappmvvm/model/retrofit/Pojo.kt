@@ -1,5 +1,7 @@
 package com.example.todoappmvvm.model.retrofit
 
+import java.io.Serializable
+
 object Pojo {
     data class UserInfoRegister(
         var name: String? = null,
@@ -22,7 +24,7 @@ object Pojo {
         var id: Int? = null,
         var title: String? = null,
         var description: String? = null,
-    )
+    ):Serializable
 
     data class GetAllListResponse(
         var data: List<GetAllLists>,
@@ -47,7 +49,7 @@ object Pojo {
     )
 
     data class UpdateRequest(
-        //var id:Int? = null,
+        var id:Int? = null,
         var title: String? = null,
         var description: String? = null,
     )
@@ -61,7 +63,7 @@ object Pojo {
         var title: String? = null,
         var description: String? = null,
         var done: Boolean = false,
-    )
+    ):Serializable
 
     data class GetAllItemsResponse(
         var items: List<GetAllItems>,

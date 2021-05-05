@@ -1,15 +1,19 @@
 package com.example.todoappmvvm.viewmodel
 
+import android.content.Context
+import android.content.Intent
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.todoappmvvm.model.repository.MainRepository
 import com.example.todoappmvvm.model.retrofit.Pojo
+import com.example.todoappmvvm.view.activity.ListActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel constructor(private val repository: MainRepository) : ViewModel() {
+class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     val signInResponse = MutableLiveData<Pojo.LoginResponse>()
     val signUpResponse = MutableLiveData<Pojo.UserInfoRegister>()
@@ -26,7 +30,6 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
     val errorMessage = MutableLiveData<String>()
 
 
-
     fun signIn(modal: Pojo.LoginRequest) {
 
         val response = repository.signIn(modal)
@@ -35,11 +38,12 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
                 call: Call<Pojo.LoginResponse>,
                 response: Response<Pojo.LoginResponse>
             ) {
-                if (response.body()?.token!=null){
+                if (response.body()?.token != null) {
                     Log.d("TAAAG", "${response.body()}")
                     signInResponse.postValue(response.body())
                 }
             }
+
             override fun onFailure(call: Call<Pojo.LoginResponse>, t: Throwable) {
                 errorMessage.postValue(t.message)
             }
@@ -70,7 +74,8 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
                 call: Call<Pojo.GetAllListResponse?>,
                 response: Response<Pojo.GetAllListResponse?>
             ) {
-                Log.d("ListResponse", "${response.body()}")
+                SystemClock.sleep(1000)
+                Log.d("From ViewModel GetList", "method getLists() ${response.body()}")
                 listResponse.postValue(response.body())
             }
 
@@ -81,14 +86,17 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
         })
     }
 
-    fun postList(modal: Pojo.GetAllLists) {
+    fun postList(modal: Pojo.CreateList) {
         val response = repository.postList(modal)
         response.enqueue(object : Callback<Pojo.CreateListResponse> {
             override fun onResponse(
                 call: Call<Pojo.CreateListResponse>,
                 response: Response<Pojo.CreateListResponse>
             ) {
+
+                Log.d("From ViewModel PostList", "method postList() ${response.body()}")
                 postListResponse.postValue(response.body())
+
             }
 
             override fun onFailure(call: Call<Pojo.CreateListResponse>, t: Throwable) {
@@ -96,23 +104,26 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
             }
         })
     }
-    fun deleteListById(id:Int?){
+
+    fun deleteListById(id: Int?) {
         val response = repository.deleteListById(id)
-        response.enqueue(object :Callback<Pojo.DeleteResponse>{
+        response.enqueue(object : Callback<Pojo.DeleteResponse> {
             override fun onResponse(
                 call: Call<Pojo.DeleteResponse>,
                 response: Response<Pojo.DeleteResponse>
             ) {
                 deleteListResponse.postValue(response.body())
             }
+
             override fun onFailure(call: Call<Pojo.DeleteResponse>, t: Throwable) {
                 errorMessage.postValue(t.message)
             }
         })
     }
-    fun updateListById(id:Int?,modal:Pojo.GetAllLists){
-        val response = repository.updateListById(id,modal)
-        response.enqueue(object :Callback<Pojo.UpdateResponse>{
+
+    fun updateListById(id: Int?, modal: Pojo.UpdateRequest) {
+        val response = repository.updateListById(id, modal)
+        response.enqueue(object : Callback<Pojo.UpdateResponse> {
             override fun onResponse(
                 call: Call<Pojo.UpdateResponse>,
                 response: Response<Pojo.UpdateResponse>
@@ -127,9 +138,10 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
             }
         })
     }
-    fun getItems(id: Int?){
+
+    fun getItems(id: Int?) {
         val response = repository.getItems(id)
-        response.enqueue(object :Callback<Pojo.GetAllItemsResponse?>{
+        response.enqueue(object : Callback<Pojo.GetAllItemsResponse?> {
             override fun onResponse(
                 call: Call<Pojo.GetAllItemsResponse?>,
                 response: Response<Pojo.GetAllItemsResponse?>
@@ -143,9 +155,10 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
 
         })
     }
-    fun postItem(id: Int?,modal: Pojo.CreateItem){
-        val response = repository.postItem(id,modal)
-        response.enqueue(object :Callback<Pojo.CreateItemResponse>{
+
+    fun postItem(id: Int?, modal: Pojo.CreateItem) {
+        val response = repository.postItem(id, modal)
+        response.enqueue(object : Callback<Pojo.CreateItemResponse> {
             override fun onResponse(
                 call: Call<Pojo.CreateItemResponse>,
                 response: Response<Pojo.CreateItemResponse>
@@ -159,9 +172,10 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
 
         })
     }
-    fun deleteItemById(id: Int?){
+
+    fun deleteItemById(id: Int?) {
         val response = repository.deleteItemById(id)
-        response.enqueue(object :Callback<Pojo.DeleteItemResponse>{
+        response.enqueue(object : Callback<Pojo.DeleteItemResponse> {
             override fun onResponse(
                 call: Call<Pojo.DeleteItemResponse>,
                 response: Response<Pojo.DeleteItemResponse>
@@ -175,24 +189,26 @@ class MainViewModel constructor(private val repository: MainRepository) : ViewMo
         })
 
     }
-   fun updateItemById(id: Int?,modal: Pojo.UpdateItemRequest){
-       val response = repository.updateItemById(id,modal)
-       response.enqueue(object :Callback<Pojo.UpdateItemResponse>{
-           override fun onResponse(
-               call: Call<Pojo.UpdateItemResponse>,
-               response: Response<Pojo.UpdateItemResponse>
-           ) {
-               updateItemById.postValue(response.body())
-           }
 
-           override fun onFailure(call: Call<Pojo.UpdateItemResponse>, t: Throwable) {
-               errorMessage.postValue(t.message)
-           }
-       })
-   }
-    fun updateCheckBoxById(id: Int?,modal: Pojo.UpdateCheckBoxRequest){
-        val response = repository.updateCheckBoxById(id,modal)
-        response.enqueue(object :Callback<Pojo.UpdateCheckBoxResponse>{
+    fun updateItemById(id: Int?, modal: Pojo.UpdateItemRequest) {
+        val response = repository.updateItemById(id, modal)
+        response.enqueue(object : Callback<Pojo.UpdateItemResponse> {
+            override fun onResponse(
+                call: Call<Pojo.UpdateItemResponse>,
+                response: Response<Pojo.UpdateItemResponse>
+            ) {
+                updateItemById.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<Pojo.UpdateItemResponse>, t: Throwable) {
+                errorMessage.postValue(t.message)
+            }
+        })
+    }
+
+    fun updateCheckBoxById(id: Int?, modal: Pojo.UpdateCheckBoxRequest) {
+        val response = repository.updateCheckBoxById(id, modal)
+        response.enqueue(object : Callback<Pojo.UpdateCheckBoxResponse> {
             override fun onResponse(
                 call: Call<Pojo.UpdateCheckBoxResponse>,
                 response: Response<Pojo.UpdateCheckBoxResponse>

@@ -8,9 +8,9 @@ class MainRepository constructor(private val apiInterface: ApiInterface) {
     fun signIn(modal: Pojo.LoginRequest) = apiInterface.signInUser(modal)
     fun signUp(modal: Pojo.UserInfoRegister) = apiInterface.signUpUser(modal)
     fun getLists() = apiInterface.getLists()
-    fun postList(modal:Pojo.GetAllLists) = apiInterface.postList(modal)
+    fun postList(modal:Pojo.CreateList) = apiInterface.postList(modal)
     fun deleteListById(id: Int?) = apiInterface.deleteListById(id)
-    fun updateListById(id:Int?,modal: Pojo.GetAllLists) = apiInterface.updateListById(id,modal)
+    fun updateListById(id:Int?,modal: Pojo.UpdateRequest) = apiInterface.updateListById(id,modal)
 
     fun getItems(id: Int?) = apiInterface.getItems(id)
     fun postItem(id: Int?,modal:Pojo.CreateItem) = apiInterface.postItem(id,modal)

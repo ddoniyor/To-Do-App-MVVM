@@ -46,7 +46,10 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         mainViewModel =
-            ViewModelProvider(this, ViewModelFactory(MainRepository(RetrofitBuilder().getApiInterface(this)))).get(
+            ViewModelProvider(
+                this,
+                ViewModelFactory(MainRepository(RetrofitBuilder().getApiInterface(this)))
+            ).get(
                 MainViewModel::class.java
             )
     }

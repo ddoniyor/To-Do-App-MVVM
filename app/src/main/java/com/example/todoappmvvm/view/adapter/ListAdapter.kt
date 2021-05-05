@@ -1,60 +1,43 @@
 package com.example.todoappmvvm.view.adapter
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoappmvvm.R
 import com.example.todoappmvvm.model.retrofit.Pojo
+import com.example.todoappmvvm.view.activity.ItemActivity
+import com.example.todoappmvvm.view.activity.ListActivity
+import com.example.todoappmvvm.view.activity.ListDetail
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.list_layout.view.*
+import java.util.ArrayList
 
-class ListAdapter(private val callbackInterface:CallbackInterface):RecyclerView.Adapter<ListAdapter.ListViewHolder>(){
+class ListAdapter(private val context: Context) :
+    RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
     var todolist = mutableListOf<Pojo.GetAllLists>()
+    //private var todolist: MutableList<Pojo.GetAllLists> = arrayListOf()
 
 
-    interface CallbackInterface {
-        fun deleteListById(id: Int)
-        fun updateListById(id:Int,list:MutableList<Pojo.GetAllLists>)
-        fun openItemActivity(id:Int)
-    }
-
-
-    fun setLists(lists: MutableList<Pojo.GetAllLists>){
-        /*val diffCallBack = ListsDiffUtil(todolist ,lists )
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-
+    fun setLists(lists: MutableList<Pojo.GetAllLists>) {
+        todolist.clear()
         todolist.addAll(lists)
-        diffResult.dispatchUpdatesTo(this)*/
-        todolist.addAll(lists)
-        Log.d("Tadas","$lists")
+        Log.d("From listAdapter", "$lists")
         notifyDataSetChanged()
-
-    }
-    fun insertData(lists: MutableList<Pojo.GetAllLists>){
-        val diffCallBack = ListsDiffUtil(todolist ,lists)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-        //todolist.remove(todolist)
-        todolist.clear()
-        todolist.addAll(lists)
-        diffResult.dispatchUpdatesTo(this)
     }
 
-    fun deleteData(lists: MutableList<Pojo.GetAllLists>){
-        val diffCallBack = ListsDiffUtil(todolist ,lists)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-        todolist.clear()
-        todolist.addAll(lists)
-        diffResult.dispatchUpdatesTo(this)
-    }
 
-    class ListViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
+    class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.title
         val description: TextView = itemView.description
-        val deleteList: ImageButton = itemView.close
+
+        //val deleteList: ImageButton = itemView.close
         val updateList: ImageButton = itemView.update
     }
 
@@ -71,24 +54,22 @@ class ListAdapter(private val callbackInterface:CallbackInterface):RecyclerView.
 
         var listItem = todolist[position]
 
-        holder.itemView.setOnClickListener{
-            callbackInterface.openItemActivity(listItem.id!!)
+        holder.itemView.setOnClickListener {
+            var intent = Intent(context, ItemActivity::class.java)
+            intent.putExtra("listId", listItem.id)
+            context.startActivity(intent)
         }
 
-        holder.deleteList.setOnClickListener{
-            Log.d("TAAAAAAAAAAAAG","КЛИИИИИИИИИИИИИИИИК УДАЛИИТЬ ${listItem.id}")
-            callbackInterface.deleteListById(listItem.id!!)
-        }
-
-        holder.updateList.setOnClickListener{
-            Log.d("TAAAAAAAAAAAAG","КЛИИИИИИИИИИИИИИИИК ИЗМЕНИТЬ ${listItem.id}")
-            callbackInterface.updateListById(position,todolist)
+        holder.updateList.setOnClickListener {
+            var intent = Intent(context, ListDetail::class.java)
+            intent.putExtra("listDetailId", listItem.id)
+            intent.putExtra("listDetailIdPosition", position)
+            intent.putExtra("listDetailData", todolist as ArrayList<String>)
+            context.startActivity(intent)
         }
 
         holder.title.text = todolist[position].title
         holder.description.text = todolist[position].description
-
-
 
 
     }
@@ -96,7 +77,6 @@ class ListAdapter(private val callbackInterface:CallbackInterface):RecyclerView.
     override fun getItemCount(): Int {
         return todolist.size
     }
-
 
 
 }

@@ -15,14 +15,14 @@ interface ApiInterface {
     fun getLists():Call<Pojo.GetAllListResponse>
 
     @POST("api/lists/")
-    fun postList(@Body listToPost: Pojo.GetAllLists):Call<Pojo.CreateListResponse>
+    fun postList(@Body listToPost: Pojo.CreateList):Call<Pojo.CreateListResponse>
 
 
     @DELETE("api/lists/{id}")
     fun deleteListById(@Path("id") id: Int?):Call<Pojo.DeleteResponse>
 
     @PUT("api/lists/{id}")
-    fun updateListById(@Path("id")id:Int?, @Body listForUpdate: Pojo.GetAllLists):Call<Pojo.UpdateResponse>
+    fun updateListById(@Path("id")id:Int?, @Body listForUpdate: Pojo.UpdateRequest):Call<Pojo.UpdateResponse>
 
     //ITEMS
     @GET("api/lists/{id}/items")

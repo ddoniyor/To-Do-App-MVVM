@@ -19,9 +19,9 @@ import com.example.todoappmvvm.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_item.*
 import kotlinx.android.synthetic.main.activity_list.*
 
-class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
+class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
     lateinit var mainViewModel: MainViewModel
-    lateinit var adapter : ItemAdapter
+    lateinit var adapter: ItemAdapter
     lateinit var layoutManager: LinearLayoutManager
     var listId: Int = 1
 
@@ -33,11 +33,11 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
 
         mainViewModel.getItems(listId)
 
-        mainViewModel.getAllitemsResponse.observe(this,{
+        mainViewModel.getAllitemsResponse.observe(this, {
             showItems(it.items as? MutableList<Pojo.GetAllItems>)
         })
-        mainViewModel.createItemResponse.observe(this,{
-            Log.d("TAAAAAAAAAAAAG","POSTED ITEM ID ${it.id}")
+        mainViewModel.createItemResponse.observe(this, {
+            Log.d("TAAAAAAAAAAAAG", "POSTED ITEM ID ${it.id}")
         })
         fabItem.setOnClickListener {
             addItem()
@@ -46,7 +46,7 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
     }
 
     private fun showItems(it: MutableList<Pojo.GetAllItems>?) {
-        if (it !=null){
+        if (it != null) {
             text_view_inItem.visibility = View.GONE
             recyclerItem.visibility = View.VISIBLE
             recyclerItem.setHasFixedSize(true)
@@ -56,17 +56,21 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
             recyclerItem.adapter = adapter
             adapter.setItems(it)
 
-        }else {
+        } else {
             recyclerItem.visibility = View.GONE
             text_view_inItem.visibility = View.VISIBLE
+
         }
     }
 
     private fun setUpViewModel() {
         mainViewModel =
-                ViewModelProvider(this, ViewModelFactory(MainRepository(RetrofitBuilder().getApiInterface(this)))).get(
-                        MainViewModel::class.java
-                )
+            ViewModelProvider(
+                this,
+                ViewModelFactory(MainRepository(RetrofitBuilder().getApiInterface(this)))
+            ).get(
+                MainViewModel::class.java
+            )
     }
 
     private fun addItem() {
@@ -81,18 +85,19 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
         layout.addView(textDescription)
         alertDialog.setView(layout)
 
-        alertDialog.setPositiveButton("Добавить"){dialog,i->
-            val modal = Pojo.CreateItem(0,textTitle.text.toString(),textDescription.text.toString())
-            mainViewModel.postItem(listId,modal)
+        alertDialog.setPositiveButton("Добавить") { dialog, i ->
+            val modal =
+                Pojo.CreateItem(0, textTitle.text.toString(), textDescription.text.toString())
+            mainViewModel.postItem(listId, modal)
             dialog.dismiss()
-            //mainViewModel.getItems(listId)
+            mainViewModel.getItems(listId)
         }
         alertDialog.show()
     }
 
     override fun deleteItemById(id: Int) {
         mainViewModel.deleteItemById(id)
-        //mainViewModel.getItems(listId)
+        mainViewModel.getItems(listId)
     }
 
     override fun updateItemById(id: Int, list: MutableList<Pojo.GetAllItems>) {
@@ -101,7 +106,7 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
         alertDialog.setTitle("Изменить задачу")
         alertDialog.setMessage("Измените название задачи и описание")
         var layout = LinearLayout(this)
-        layout.orientation =LinearLayout.VERTICAL
+        layout.orientation = LinearLayout.VERTICAL
         val textTitle = EditText(this)
         val textDescription = EditText(this)
         layout.addView(textTitle)
@@ -109,19 +114,20 @@ class ItemActivity : AppCompatActivity(),ItemAdapter.CallbackInterface{
         textTitle.setText(listItem.title)
         textDescription.setText(listItem.description)
         alertDialog.setView(layout)
-        alertDialog.setPositiveButton("Изменить"){dialog,i->
+        alertDialog.setPositiveButton("Изменить") { dialog, i ->
             val modal = Pojo.UpdateItemRequest(
-                    textTitle.text.toString(),
-                    textDescription.text.toString())
-            mainViewModel.updateItemById(listItem.id,modal)
+                textTitle.text.toString(),
+                textDescription.text.toString()
+            )
+            mainViewModel.updateItemById(listItem.id, modal)
             dialog.dismiss()
-            //mainViewModel.getItems(listId)
+            mainViewModel.getItems(listId)
         }
         alertDialog.show()
     }
 
     override fun updateCheckBox(id: Int, state: Pojo.UpdateCheckBoxRequest) {
-        mainViewModel.updateCheckBoxById(id,state)
-        //mainViewModel.getItems(listId)
+        mainViewModel.updateCheckBoxById(id, state)
+        mainViewModel.getItems(listId)
     }
 }
