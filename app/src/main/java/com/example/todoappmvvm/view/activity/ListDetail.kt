@@ -27,6 +27,7 @@ class ListDetail : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_detail)
+        setUpViewModel()
 
         listDetailId = intent.getIntExtra("listDetailId", 0)
 
@@ -46,14 +47,23 @@ class ListDetail : AppCompatActivity() {
             updateListByIdDetail()
         }
 
-        setUpViewModel()
-
-        mainViewModel.postListResponse.observe(this, {
-            Log.d("From ListDetail", "POSTED LIST ID RESPONSE ${it.id}")
-        })
         mainViewModel.updateListResponse.observe(this, {
-            Log.d("From ListDetail", "UPDATED LIST ID RESPONSE ${it.status}")
+            intent = Intent(this, ListActivity::class.java)
+            startActivity(intent)
+            finishAffinity()
         })
+        mainViewModel.postListResponse.observe(this, {
+            Log.d("From ListActivity", "POSTED LIST ID RESPONSE ${it.id}")
+            intent = Intent(this, ListActivity::class.java)
+            startActivity(intent)
+            finishAffinity()
+        })
+        mainViewModel.deleteListResponse.observe(this,{
+            intent = Intent(this, ListActivity::class.java)
+            startActivity(intent)
+            finishAffinity()
+        })
+
     }
 
     private fun addList() {
@@ -63,14 +73,7 @@ class ListDetail : AppCompatActivity() {
                 title_list_detail.text.toString(),
                 description_list_detail.text.toString()
             )
-
-            Log.d("From ListDetail", "POSTED LIST DATA  $modal")
             mainViewModel.postList(modal)
-
-            intent = Intent(this, ListActivity::class.java)
-            startActivity(intent)
-            finishAffinity()
-
 
         }
     }
@@ -78,9 +81,7 @@ class ListDetail : AppCompatActivity() {
     fun deleteList() {
         delete_list_detail.setOnClickListener {
             mainViewModel.deleteListById(listDetailId)
-            intent = Intent(this, ListActivity::class.java)
-            startActivity(intent)
-            finishAffinity()
+
         }
     }
 
@@ -99,11 +100,8 @@ class ListDetail : AppCompatActivity() {
                 title_list_detail.text.toString(),
                 description_list_detail.text.toString()
             )
-
             mainViewModel.updateListById(listDetailId, model)
-            intent = Intent(this, ListActivity::class.java)
-            startActivity(intent)
-            finishAffinity()
+
         }
     }
 

@@ -24,9 +24,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     val getAllitemsResponse = MutableLiveData<Pojo.GetAllItemsResponse>()
     val createItemResponse = MutableLiveData<Pojo.CreateItemResponse>()
-    val deleteItemById = MutableLiveData<Pojo.DeleteItemResponse>()
-    val updateItemById = MutableLiveData<Pojo.UpdateItemResponse>()
-    val updateCheckBoxById = MutableLiveData<Pojo.UpdateCheckBoxResponse>()
+    val deleteItemByIdResponse = MutableLiveData<Pojo.DeleteItemResponse>()
+    val updateItemByIdResponse = MutableLiveData<Pojo.UpdateItemResponse>()
+    val updateCheckBoxByIdResponse = MutableLiveData<Pojo.UpdateCheckBoxResponse>()
     val errorMessage = MutableLiveData<String>()
 
 
@@ -74,10 +74,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.GetAllListResponse?>,
                 response: Response<Pojo.GetAllListResponse?>
             ) {
-                SystemClock.sleep(1000)
                 Log.d("From ViewModel GetList", "method getLists() ${response.body()}")
                 listResponse.postValue(response.body())
-            }
+              }
 
             override fun onFailure(call: Call<Pojo.GetAllListResponse?>, t: Throwable) {
                 errorMessage.postValue(t.message)
@@ -146,6 +145,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.GetAllItemsResponse?>,
                 response: Response<Pojo.GetAllItemsResponse?>
             ) {
+                //SystemClock.sleep(1000)
                 getAllitemsResponse.postValue(response.body())
             }
 
@@ -180,7 +180,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.DeleteItemResponse>,
                 response: Response<Pojo.DeleteItemResponse>
             ) {
-                deleteItemById.postValue(response.body())
+                deleteItemByIdResponse.postValue(response.body())
             }
 
             override fun onFailure(call: Call<Pojo.DeleteItemResponse>, t: Throwable) {
@@ -197,7 +197,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.UpdateItemResponse>,
                 response: Response<Pojo.UpdateItemResponse>
             ) {
-                updateItemById.postValue(response.body())
+                updateItemByIdResponse.postValue(response.body())
             }
 
             override fun onFailure(call: Call<Pojo.UpdateItemResponse>, t: Throwable) {
@@ -213,7 +213,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.UpdateCheckBoxResponse>,
                 response: Response<Pojo.UpdateCheckBoxResponse>
             ) {
-                updateCheckBoxById.postValue(response.body())
+                updateCheckBoxByIdResponse.postValue(response.body())
             }
 
             override fun onFailure(call: Call<Pojo.UpdateCheckBoxResponse>, t: Throwable) {

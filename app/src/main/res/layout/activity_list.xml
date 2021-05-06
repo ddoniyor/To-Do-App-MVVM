@@ -38,8 +38,8 @@
         android:id="@+id/text_view_inList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Здесь будут ваши списки"
         android:textSize="20sp"
+        android:text="Здесь будут ваши списки"
         android:gravity="center"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

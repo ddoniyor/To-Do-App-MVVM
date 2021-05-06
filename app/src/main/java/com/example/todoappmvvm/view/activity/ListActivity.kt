@@ -1,11 +1,9 @@
 package com.example.todoappmvvm.view.activity
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,12 +16,10 @@ import com.example.todoappmvvm.view.adapter.ListAdapter
 import com.example.todoappmvvm.viewmodel.MainViewModel
 import com.example.todoappmvvm.viewmodel.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbaraction.*
-import kotlinx.coroutines.delay
 
-class ListActivity : AppCompatActivity() {
+class ListActivity : AppCompatActivity(),ListAdapter.CallBackIntent {
     lateinit var mainViewModel: MainViewModel
     lateinit var adapter: ListAdapter
     lateinit var layoutManager: GridLayoutManager
@@ -33,8 +29,9 @@ class ListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        sharedPreferencesHelper = SharedPreferencesHelper(this)
         setUpViewModel()
+        sharedPreferencesHelper = SharedPreferencesHelper(this)
+
 
 
         mainViewModel.listResponse.observe(this, {
@@ -46,13 +43,15 @@ class ListActivity : AppCompatActivity() {
                 adapter = ListAdapter(this)
                 adapter.setLists(it.data as MutableList<Pojo.GetAllLists>)
                 recyclerList.adapter = adapter
-            } else {
+            } else if(it.data== null) {
                 recyclerList.visibility = View.GONE
                 text_view_inList.visibility = View.VISIBLE
             }
 
             Log.d("From LIST Activity", "${it.data}")
         })
+
+
 
         fab.setOnClickListener {
             intent = Intent(this, ListDetail::class.java)
@@ -63,7 +62,7 @@ class ListActivity : AppCompatActivity() {
         setSupportActionBar(toolbar_acttion)
         supportActionBar?.apply {
             buttonExit.setOnClickListener {
-                openLoginActivity()
+                logOut()
             }
         }
 
@@ -72,7 +71,6 @@ class ListActivity : AppCompatActivity() {
 
 
     private fun setUpViewModel() {
-
         mainViewModel =
             ViewModelProvider(
                 this,
@@ -83,25 +81,39 @@ class ListActivity : AppCompatActivity() {
     }
 
 
-    private fun openLoginActivity() {
+    private fun logOut() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Выход")
-            .setMessage("Вы уверены что хотите выйти?")
-            .setNeutralButton("Закрыть") { dialog, which ->
-                dialog.cancel()
-            }
-            .setNegativeButton("Нет") { dialog, which ->
-                dialog.cancel()
-            }
-            .setPositiveButton("Да") { dialog, which ->
-                sharedPreferencesHelper.clearDataSharedLogin()
-                sharedPreferencesHelper.clearDataShared()
-                intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finishAffinity()
-                dialog.cancel()
-            }
-            .show()
+                .setTitle("Выход")
+                .setMessage("Вы уверены что хотите выйти?")
+                .setNeutralButton("Закрыть") { dialog, which ->
+                    dialog.cancel()
+                }
+                .setNegativeButton("Нет") { dialog, which ->
+                    dialog.cancel()
+                }
+                .setPositiveButton("Да") { dialog, which ->
+                    sharedPreferencesHelper.clearDataSharedLogin()
+                    sharedPreferencesHelper.clearDataShared()
+                    intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                    finishAffinity()
+                    dialog.cancel()
+                }
+                .show()
+    }
+
+    override fun openListDetail(id: Int, position: Int, modal: MutableList<Pojo.GetAllLists>) {
+            intent = Intent(this, ListDetail::class.java)
+            intent.putExtra("listDetailId", id)
+            intent.putExtra("listDetailIdPosition", position)
+            intent.putExtra("listDetailData", modal as ArrayList<String>)
+            startActivity(intent)
+    }
+
+    override fun openItemActivity(id: Int) {
+            intent = Intent(this, ItemActivity::class.java)
+            intent.putExtra("listId", id)
+            startActivity(intent)
     }
 
 }
