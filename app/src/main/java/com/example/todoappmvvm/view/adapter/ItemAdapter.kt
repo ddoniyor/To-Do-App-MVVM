@@ -15,18 +15,35 @@ import kotlinx.android.synthetic.main.list_layout.view.*
 
 class ItemAdapter(private val callbackInterface: CallbackInterface) :
     RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
-    var todoItem = mutableListOf<Pojo.GetAllItems>()
+    var todoItem = mutableListOf<Pojo.Items>()
 
     interface CallbackInterface {
+        fun itemPosition(pos: Int)
         fun deleteItemById(id: Int)
-        fun updateItemById(id: Int, list: MutableList<Pojo.GetAllItems>)
+        fun updateItemById(id: Int, list: MutableList<Pojo.Items>)
         fun updateCheckBox(id: Int, state: Pojo.UpdateCheckBoxRequest)
     }
 
-    fun setItems(items: MutableList<Pojo.GetAllItems>?) {
+    fun setItems(items: MutableList<Pojo.Items>?) {
         this.todoItem = items!!
         notifyDataSetChanged()
     }
+
+    fun setItem(item: Pojo.Items) {
+        todoItem.add(item)
+        notifyItemInserted(todoItem.size - 1)
+    }
+    fun updateItem(id: Int,item:Pojo.Items){
+        todoItem.set(id,item)
+        notifyItemChanged(id)
+    }
+    fun deleteItem(id: Int){
+        todoItem.removeAt(id)
+        notifyItemRemoved(id)
+        notifyItemRangeChanged(id, itemCount);
+    }
+
+
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.titleItem
@@ -48,11 +65,15 @@ class ItemAdapter(private val callbackInterface: CallbackInterface) :
         val modalFalse = Pojo.UpdateCheckBoxRequest(false)
 
         holder.deleteItem.setOnClickListener {
+            callbackInterface.itemPosition(position)
             callbackInterface.deleteItemById(listItem.id)
+
         }
 
         holder.updateItem.setOnClickListener {
+            callbackInterface.itemPosition(position)
             callbackInterface.updateItemById(position, todoItem)
+
         }
 
         holder.title.text = todoItem[position].title
@@ -71,11 +92,12 @@ class ItemAdapter(private val callbackInterface: CallbackInterface) :
         }
 
         holder.doneItem.isChecked = todoItem[position].done
-        if (todoItem[position].done) {
+
+        /*if (todoItem[position].done) {
             holder.doneItem.text = "Выполнено"
         } else {
             holder.doneItem.text = "Не выполнено"
-        }
+        }*/
 
     }
 

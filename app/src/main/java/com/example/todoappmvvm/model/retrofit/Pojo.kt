@@ -3,6 +3,18 @@ package com.example.todoappmvvm.model.retrofit
 import java.io.Serializable
 
 object Pojo {
+    abstract class Lists{
+        abstract var id: Int
+        abstract var title: String
+        abstract var description: String
+    }
+    data class Items(
+         var id: Int = 0,
+         var title: String = "",
+         var description: String = "",
+         var done: Boolean = false
+    ):Serializable
+
     data class UserInfoRegister(
         var name: String? = null,
         var username: String? = null,
@@ -13,7 +25,6 @@ object Pojo {
     data class LoginRequest(
         var username: String? = null,
         var password: String? = null,
-
         )
 
     data class LoginResponse(
@@ -21,9 +32,9 @@ object Pojo {
     )
 
     data class GetAllLists(
-        var id: Int? = null,
-        var title: String? = null,
-        var description: String? = null,
+        var id: Int = 0,
+        var title: String = "",
+        var description: String = "",
     ):Serializable
 
     data class GetAllListResponse(
@@ -31,9 +42,9 @@ object Pojo {
     )
 
     data class CreateList(
-        var id: Int? = null,
-        var title: String? = null,
-        var description: String? = null,
+            var id: Int = 0,
+            var title: String = "",
+            var description: String = "",
     )
 
     data class CreateListResponse(
@@ -49,33 +60,31 @@ object Pojo {
     )
 
     data class UpdateRequest(
-        var id:Int? = null,
-        var title: String? = null,
-        var description: String? = null,
+            var id:Int = 0,
+            var title: String = "",
+            var description: String = "",
     )
-
     data class UpdateResponse(
         var status: String? = null,
     )
 
-    data class GetAllItems(
-        var id: Int,
-        var title: String? = null,
-        var description: String? = null,
-        var done: Boolean = false,
-    ):Serializable
+    /*data class GetAllItems(
+        var id: Int = 0,
+        override var title: String = "",
+        override var description: String = "",
+        override var done: Boolean = false,
+    ):Serializable,Items()*/
 
     data class GetAllItemsResponse(
-        var items: List<GetAllItems>,
+        var items: List<Items>,
     )
 
-    data class CreateItem(
-        var id: Int? = null,
-        var title: String? = null,
-        var description: String? = null,
-        var done: Boolean = false,
-    )
-
+    /*data class CreateItem(
+            override var title: String = "",
+            override var description: String = "",
+            override var done: Boolean = false,
+    ):Items()
+*/
     data class CreateItemResponse(
         var id: Int? = null,
     )

@@ -28,7 +28,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     val updateItemByIdResponse = MutableLiveData<Pojo.UpdateItemResponse>()
     val updateCheckBoxByIdResponse = MutableLiveData<Pojo.UpdateCheckBoxResponse>()
     val errorMessage = MutableLiveData<String>()
-
+    var errorMessageToken = MutableLiveData<String>()
 
     fun signIn(modal: Pojo.LoginRequest) {
 
@@ -45,7 +45,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
             }
 
             override fun onFailure(call: Call<Pojo.LoginResponse>, t: Throwable) {
-                errorMessage.postValue(t.message)
+                errorMessageToken.postValue(t.message)
             }
         })
     }
@@ -156,7 +156,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         })
     }
 
-    fun postItem(id: Int?, modal: Pojo.CreateItem) {
+    fun postItem(id: Int?, modal: Pojo.Items) {
         val response = repository.postItem(id, modal)
         response.enqueue(object : Callback<Pojo.CreateItemResponse> {
             override fun onResponse(
@@ -180,6 +180,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 call: Call<Pojo.DeleteItemResponse>,
                 response: Response<Pojo.DeleteItemResponse>
             ) {
+
                 deleteItemByIdResponse.postValue(response.body())
             }
 
@@ -190,7 +191,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     }
 
-    fun updateItemById(id: Int?, modal: Pojo.UpdateItemRequest) {
+    fun updateItemById(id: Int?, modal: Pojo.Items) {
         val response = repository.updateItemById(id, modal)
         response.enqueue(object : Callback<Pojo.UpdateItemResponse> {
             override fun onResponse(

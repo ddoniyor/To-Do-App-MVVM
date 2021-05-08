@@ -17,7 +17,6 @@ import java.util.ArrayList
 class ListAdapter(private var callBackIntent: CallBackIntent) :
     RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
     var todolist = mutableListOf<Pojo.GetAllLists>()
-    //private var todolist: MutableList<Pojo.GetAllLists> = arrayListOf()
 
     interface CallBackIntent{
         fun openListDetail(id:Int,position: Int,modal:MutableList<Pojo.GetAllLists>)
@@ -30,6 +29,11 @@ class ListAdapter(private var callBackIntent: CallBackIntent) :
         todolist.addAll(lists)
         Log.d("From listAdapter", "$lists")
         notifyDataSetChanged()
+    }
+
+    fun setItem(item: Pojo.CreateList) {
+        todolist.add(Pojo.GetAllLists(item.id, item.title,item.description))
+        notifyItemInserted(todolist.size - 1)
     }
 
 

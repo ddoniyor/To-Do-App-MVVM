@@ -1,13 +1,12 @@
 package com.example.todoappmvvm.view.activity
 
-import android.app.AlertDialog
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoappmvvm.R
@@ -19,38 +18,56 @@ import com.example.todoappmvvm.viewmodel.MainViewModel
 import com.example.todoappmvvm.viewmodel.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_item.*
-import kotlinx.android.synthetic.main.activity_list.*
+import kotlinx.android.synthetic.main.item_layout.*
+
 
 class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
     lateinit var mainViewModel: MainViewModel
     lateinit var adapter: ItemAdapter
     lateinit var layoutManager: LinearLayoutManager
     var listId: Int = 1
+    var globItemPosition:Int = 0
+    lateinit var globalModal:Pojo.Items
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item)
+        progressbaritem.visibility = View.VISIBLE
         setUpViewModel()
+
+        layoutManager = LinearLayoutManager(this)
+        recyclerItem.layoutManager = layoutManager
+        adapter = ItemAdapter(this)
+        recyclerItem.adapter = adapter
+
         listId = intent.getIntExtra("listId", 0)
 
         mainViewModel.getItems(listId)
 
         mainViewModel.getAllitemsResponse.observe(this, {
-            showItems(it.items as? MutableList<Pojo.GetAllItems>)
+            showItems(it.items as? MutableList<Pojo.Items>)
         })
 
         mainViewModel.createItemResponse.observe(this, {
-            mainViewModel.getItems(listId)
+            Log.d("ItemAct", "CREATE item ID${it.id}")
+            globalModal.id = it.id!!
+            adapter.setItem(globalModal)
+            //modalGlobal.id = it.id!!
+            //mainViewModel.getItems(listId)
         })
 
-        mainViewModel.deleteItemByIdResponse.observe(this,{
-            mainViewModel.getItems(listId)
+        mainViewModel.deleteItemByIdResponse.observe(this, {
+            Log.d("ItemAct", "DELETE ITEM STATUSS ${it.status}")
+            adapter.deleteItem(globItemPosition)
+            //mainViewModel.getItems(listId)
         })
-        mainViewModel.updateItemByIdResponse.observe(this,{
-            mainViewModel.getItems(listId)
+        mainViewModel.updateItemByIdResponse.observe(this, {
+            adapter.updateItem(globItemPosition, globalModal)
+            //mainViewModel.getItems(listId)
         })
-        mainViewModel.updateCheckBoxByIdResponse.observe(this,{
-            mainViewModel.getItems(listId)
+        mainViewModel.updateCheckBoxByIdResponse.observe(this, {
+            //mainViewModel.getItems(listId)
         })
 
 
@@ -60,19 +77,18 @@ class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
 
     }
 
-    private fun showItems(it: MutableList<Pojo.GetAllItems>?) {
+    private fun showItems(it: MutableList<Pojo.Items>?) {
         if (it != null) {
+            progressbaritem.visibility = View.GONE
             text_view_inItem.visibility = View.GONE
             recyclerItem.visibility = View.VISIBLE
-            recyclerItem.setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this)
-            recyclerItem.layoutManager = layoutManager
-            adapter = ItemAdapter(this)
-            recyclerItem.adapter = adapter
+
+
             adapter.setItems(it)
 
         } else {
-            recyclerItem.visibility = View.GONE
+            progressbaritem.visibility = View.GONE
+            recyclerItem.visibility = View.VISIBLE
             text_view_inItem.visibility = View.VISIBLE
         }
     }
@@ -89,15 +105,21 @@ class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
                 .setTitle("Добавить задачу")
                 .setMessage("Добавьте описание к задаче")
                 .setView(layout)
-                .setPositiveButton("Изменить") { dialog, which ->
-                    val modal =
-                            Pojo.CreateItem(0, textTitle.text.toString(), textDescription.text.toString())
-                    mainViewModel.postItem(listId, modal)
-                    dialog.dismiss()
+                .setPositiveButton("Добавить") { dialog, which ->
+                    if (textTitle.text.toString().isNotEmpty()&&textDescription.text.toString().isNotEmpty()){
+                        val modal =
+                            Pojo.Items(0, textTitle.text.toString(), textDescription.text.toString())
+                        globalModal = modal
+                        mainViewModel.postItem(listId, modal)
+                        //dialog.dismiss()
+                    }else{
+                        Toast.makeText(this, "Заполните все поля задачи", Toast.LENGTH_SHORT).show()
+                    }
+
                 }.show()
     }
 
-    override fun updateItemById(id: Int, list: MutableList<Pojo.GetAllItems>) {
+    override fun updateItemById(id: Int, list: MutableList<Pojo.Items>) {
         var listItem = list[id]
         var layout = LinearLayout(this)
         layout.orientation = LinearLayout.VERTICAL
@@ -113,14 +135,24 @@ class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
                 .setMessage("Измените название задачи и описание")
                 .setView(layout)
                 .setPositiveButton("Изменить") { dialog, which ->
-                    val modal = Pojo.UpdateItemRequest(
+                    if (textTitle.text.toString().isNotEmpty() && textDescription.text.toString().isNotEmpty()){
+                        val modal = Pojo.Items(
+                            0,
                             textTitle.text.toString(),
                             textDescription.text.toString()
-                    )
-                    mainViewModel.updateItemById(listItem.id, modal)
-                    dialog.dismiss()
+                        )
+                        globalModal = modal
+                        mainViewModel.updateItemById(listItem.id, modal)
+                    }else{
+                        Toast.makeText(this, "Заполните все поля задачи", Toast.LENGTH_SHORT).show()
+                    }
                 }.show()
     }
+
+    override fun itemPosition(position: Int) {
+        globItemPosition = position
+    }
+
     override fun deleteItemById(id: Int) {
         mainViewModel.deleteItemById(id)
 
@@ -139,5 +171,10 @@ class ItemActivity : AppCompatActivity(), ItemAdapter.CallbackInterface {
                 ).get(
                         MainViewModel::class.java
                 )
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.slide_in_left,
+                R.anim.slide_out_right)
     }
 }

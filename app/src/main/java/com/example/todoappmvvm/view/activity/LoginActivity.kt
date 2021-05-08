@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Не зарегистрированы", Toast.LENGTH_LONG).show()
                 }*/
             } else {
-                Toast.makeText(this, "Не ввели пароль или логин", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Не ввели пароль или логин", Toast.LENGTH_SHORT).show()
             }
 
         }
@@ -63,13 +63,26 @@ class LoginActivity : AppCompatActivity() {
 
         mainViewModel.signInResponse.observe(this, Observer {
             if (it.token != null) {
+                //password_edt_enter.error = null
                 sharedPreferencesHelper?.saveAuthToken(it.token!!)
                 Toast.makeText(this, "this IS${it.token}", Toast.LENGTH_SHORT).show()
                 intent = Intent(this, ListActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right,
+                        R.anim.slide_out_left);
+            }
+            if (it.token == null){
+                Toast.makeText(this, "Неправильный пароль", Toast.LENGTH_SHORT).show()
+                //password_edt_enter.error = "Неправильный  пароль"
             }
 
+            //Toast.makeText(this, "this IS${it.token}", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Неправильный парольss", Toast.LENGTH_SHORT).show()
+
+        })
+        mainViewModel.errorMessageToken.observe(this,{
+            Toast.makeText(this, "Неправильный пароль", Toast.LENGTH_SHORT).show()
         })
 
         mainViewModel.errorMessage.observe(this, Observer {
@@ -77,7 +90,9 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-
+    fun toast(){
+        Toast.makeText(this, "Неправильный пароль", Toast.LENGTH_SHORT).show()
+    }
     private fun signInUser(username: String, password: String) {
         val modal = Pojo.LoginRequest(username, password)
         mainViewModel.signIn(modal)

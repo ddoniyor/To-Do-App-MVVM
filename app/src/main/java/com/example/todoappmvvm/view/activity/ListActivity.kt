@@ -1,6 +1,8 @@
 package com.example.todoappmvvm.view.activity
 
+import android.app.ActivityOptions
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,6 +18,7 @@ import com.example.todoappmvvm.view.adapter.ListAdapter
 import com.example.todoappmvvm.viewmodel.MainViewModel
 import com.example.todoappmvvm.viewmodel.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.android.synthetic.main.activity_item.*
 import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbaraction.*
 
@@ -30,12 +33,14 @@ class ListActivity : AppCompatActivity(),ListAdapter.CallBackIntent {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
         setUpViewModel()
+        progressbarlist.visibility = View.VISIBLE
         sharedPreferencesHelper = SharedPreferencesHelper(this)
-
 
 
         mainViewModel.listResponse.observe(this, {
             if (it.data != null) {
+                progressbarlist.visibility = View.INVISIBLE
+
                 text_view_inList.visibility = View.GONE
                 recyclerList.visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(this, 2)
@@ -43,19 +48,26 @@ class ListActivity : AppCompatActivity(),ListAdapter.CallBackIntent {
                 adapter = ListAdapter(this)
                 adapter.setLists(it.data as MutableList<Pojo.GetAllLists>)
                 recyclerList.adapter = adapter
-            } else if(it.data== null) {
+            } else {
+                progressbarlist.visibility = View.GONE
                 recyclerList.visibility = View.GONE
                 text_view_inList.visibility = View.VISIBLE
             }
-
             Log.d("From LIST Activity", "${it.data}")
         })
 
+        itemsswipetorefresh.setOnRefreshListener {
+
+            mainViewModel.getLists()
+            itemsswipetorefresh.isRefreshing = false
+        }
 
 
         fab.setOnClickListener {
             intent = Intent(this, ListDetail::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right,
+                    R.anim.slide_out_left)
         }
 
 
@@ -67,6 +79,7 @@ class ListActivity : AppCompatActivity(),ListAdapter.CallBackIntent {
         }
 
         mainViewModel.getLists()
+
     }
 
 
@@ -108,12 +121,17 @@ class ListActivity : AppCompatActivity(),ListAdapter.CallBackIntent {
             intent.putExtra("listDetailIdPosition", position)
             intent.putExtra("listDetailData", modal as ArrayList<String>)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right,
+                R.anim.slide_out_left)
+
     }
 
     override fun openItemActivity(id: Int) {
             intent = Intent(this, ItemActivity::class.java)
             intent.putExtra("listId", id)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right,
+                R.anim.slide_out_left)
     }
 
 }

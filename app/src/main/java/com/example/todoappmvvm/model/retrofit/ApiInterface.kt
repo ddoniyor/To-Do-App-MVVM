@@ -29,13 +29,13 @@ interface ApiInterface {
     fun getItems(@Path("id")id:Int?):Call<Pojo.GetAllItemsResponse>
 
     @POST("api/lists/{id}/items/")
-    fun postItem(@Path("id")id:Int?,@Body itemToPost: Pojo.CreateItem):Call<Pojo.CreateItemResponse>
+    fun postItem(@Path("id")id:Int?,@Body itemToPost: Pojo.Items):Call<Pojo.CreateItemResponse>
 
     @DELETE("api/items/{id}")
     fun deleteItemById(@Path("id")id: Int?):Call<Pojo.DeleteItemResponse>
 
     @PUT("api/items/{id}")
-    fun updateItemById(@Path("id")id: Int?,@Body itemToUpdate: Pojo.UpdateItemRequest):Call<Pojo.UpdateItemResponse>
+    fun updateItemById(@Path("id")id: Int?,@Body itemToUpdate: Pojo.Items):Call<Pojo.UpdateItemResponse>
 
     @PUT("api/items/{id}")
     fun updateCheckBoxById(@Path("id") id:Int?, @Body checkBoxToUpdate: Pojo.UpdateCheckBoxRequest):Call<Pojo.UpdateCheckBoxResponse>

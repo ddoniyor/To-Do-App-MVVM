@@ -13,9 +13,9 @@ class MainRepository constructor(private val apiInterface: ApiInterface) {
     fun updateListById(id:Int?,modal: Pojo.UpdateRequest) = apiInterface.updateListById(id,modal)
 
     fun getItems(id: Int?) = apiInterface.getItems(id)
-    fun postItem(id: Int?,modal:Pojo.CreateItem) = apiInterface.postItem(id,modal)
+    fun postItem(id: Int?,modal:Pojo.Items) = apiInterface.postItem(id,modal)
     fun deleteItemById(id: Int?) = apiInterface.deleteItemById(id)
-    fun updateItemById(id: Int?,modal: Pojo.UpdateItemRequest) = apiInterface.updateItemById(id,modal)
+    fun updateItemById(id: Int?,modal: Pojo.Items) = apiInterface.updateItemById(id,modal)
     fun updateCheckBoxById(id: Int?,modal: Pojo.UpdateCheckBoxRequest) = apiInterface.updateCheckBoxById(id,modal)
 
 }

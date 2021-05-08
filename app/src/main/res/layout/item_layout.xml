@@ -75,7 +75,7 @@
             android:layout_below="@id/updateItem"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="15dp"
-            android:text="Выполнено"
+            android:text=""
             />
 
     </RelativeLayout>
